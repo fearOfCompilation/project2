@@ -19,18 +19,15 @@ def fileAnalysis(file):
                     elif line.find('(') == -1: # this denotes the the first paraenthesis for the def function is missing
                         # since strings are immutatable have to make a new string with the missing piece and then overwrite that line of the file
                         line = line[:line.find('def') + 3] + '(' + line[line.find('def') + 3:]
-                        opened.write(line)
-                        opened.truncate()
+                        out.write(line)
                         opened.readline()
                     elif line.find(')') == -1:
                         line = line[:line.find(':')] + ')' + line[line.find(':'):]
-                        opened.write(line)
-                        opened.truncate()
+                        out.write(line)
                         opened.readline()
                     else:
                         line = line + ':'
-                        opened.write(line)
-                        opened.truncate()
+                        out.write(line)
                         opened.readline()
             elif line.__contains__('if'):
                 if line.__contains__(':'):
@@ -38,8 +35,7 @@ def fileAnalysis(file):
                     line = opened.readline()
                 else:
                     line = line + ':'
-                    opened.write(line)
-                    opened.truncate()
+                    out.write(line)
                     opened.readline()
             else:
                 printKeywords += line.count('print(') # Checking for the first paraenthesis since only function calls are wanted, not the actual word
