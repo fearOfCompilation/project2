@@ -1,5 +1,3 @@
-
-
 def fileAnalysis(file):
     """Function that begins the file Analysis"""
     def indentationCheck(line, sub):
@@ -40,7 +38,7 @@ def fileAnalysis(file):
                         line = line + ':'
                         out.write(line)
                         line = opened.readline()
-            elif line.__contains__('if'):
+            elif line.__contains__('if '):
                 if line.__contains__(':'):
                     sub +=1
                     out.write(line)
@@ -53,7 +51,7 @@ def fileAnalysis(file):
                 printKeywords += line.count('print(') # Checking for the first paraenthesis since only function calls are wanted, not the actual word
                 line = opened.readline()
         else:
-            if line.__contains__('def'):
+            if line.__contains__('def '):
                 if line.__contains__('(') and line.__contains__(')') and line.__contains__(':'):
                     line, sub = indentationCheck(line, sub) # Example using new indentation check method and skeleton for rest
                     out.write(line)
@@ -67,6 +65,16 @@ def fileAnalysis(file):
                 else:
                     line = line + ':'
                     # Input measures for indentation check
+            elif line.__contains__('if '):
+                line = 'something' # CHANGE THIS FOR IF SUB-LEVEL CHECKING
+            elif line.__contains__('while '):
+                line = 'something' # CHANGE THIS FOR WHILE SUB-LEVEL CHECKING
+            elif line.__contains__('for '):
+                line = 'something' # CHANGE THIS FOR FOR-LOOP SUB-LEVEL CHECKING
+            else:
+                printKeywords += line.count('print(')
+                sub -= 1
+                line = opened.readline()
 
 
 
@@ -76,3 +84,6 @@ def main():
     """Main function to be run when in standalone"""
     fileName = input('Please input the name of the file')
     fileAnalysis(fileName)
+
+if __name__ == '__main__':
+    main()
