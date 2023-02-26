@@ -89,11 +89,17 @@ def fileAnalysis(file):
                     line = opened.readline() # Reading next line for next check
                 elif line.find(':') != -1 and line.find(' in ') == -1:
                     first_space = line.find(' ')
-                    second_space = line.find(' ', first_space) # for x in
-                    line = line[:second_space] + 'in ' + line[second_space:]
+                    second_space = line.find(' ', first_space) # index of second space
+                    line = line[:second_space] + 'in ' + line[second_space:] # add in the in key word and a space
                     out.write(line) # write line to out file
                     line = opened.readline() # Reading next line for next check
-                line = 'something' # CHANGE THIS FOR FOR-LOOP SUB-LEVEL CHECKING
+                else:
+                    first_space = line.find(' ')
+                    second_space = line.find(' ', first_space) # index of second space
+                    line = line[:second_space] + 'in ' + line[second_space:] # add in the in key word and a space
+                    line = line + ":" #add to the end of the line
+                    out.write(line) # write line to out file
+                    line = opened.readline() # Reading next line for next check
             else:
                 printKeywords += line.count('print(')
                 sub -= 1
