@@ -26,16 +26,16 @@ def fileAnalysis(file):
                         sub +=1
                         out.write(line)
                         line = opened.readline()
-                    elif line.find('(') == -1: # this denotes the the first paraenthesis for the def function is missing
+                    if line.find('(') == -1: # this denotes the the first paraenthesis for the def function is missing
                         # since strings are immutatable have to make a new string with the missing piece and then overwrite that line of the file
                         line = line[:line.find('def') + 3] + '(' + line[line.find('def') + 3:]
                         out.write(line)
                         line = opened.readline()
-                    elif line.find(')') == -1:
+                    if line.find(')') == -1:
                         line = line[:line.find(':')] + ')' + line[line.find(':'):]
                         out.write(line)
                         line = opened.readline()
-                    else:
+                    if line.find(':') == -1:
                         line = line + ':'
                         out.write(line)
                         line = opened.readline()
@@ -57,13 +57,13 @@ def fileAnalysis(file):
                     line, sub = indentationCheck(line, sub) # Example using new indentation check method and skeleton for rest
                     out.write(line)
                     line = opened.readline()
-                elif line.find('(') == -1: 
+                if line.find('(') == -1: 
                     line = line[:line.find('def') + 3] + '(' + line[line.find('def') + 3:]
                     # Input measures for the indentation check
-                elif line.find(')') == -1:
+                if line.find(')') == -1:
                     line = line[:line.find(':')] + ')' + line[line.find(':'):]
                     # Input measures for indentation check
-                else:
+                if line.find(':') == -1:
                     line = line + ':'
                     # Input measures for indentation check
             elif line.__contains__('if '):
