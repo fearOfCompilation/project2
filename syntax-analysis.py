@@ -2,6 +2,7 @@ def fileAnalysis(file):
     """Function that begins the file Analysis"""
     def indentationCheck(line, sub):
         """Function to check the amount of indentation a line has, assuming the rest of the function has been corrected"""
+        line = line.rstrip('\t') # removes tabs from end of line (just to protect against edge case "\t *line* \t")
         indents = line.count('\t')
         if indents == sub: # Passed line has enough indents and is good for placement
             return line, sub - 1
@@ -68,9 +69,37 @@ def fileAnalysis(file):
             elif line.__contains__('if '):
                 line = 'something' # CHANGE THIS FOR IF SUB-LEVEL CHECKING
             elif line.__contains__('while '):
-                line = 'something' # CHANGE THIS FOR WHILE SUB-LEVEL CHECKING
+                if line.__contains__(':'):
+                    line, sub = indentationCheck(line, sub) # call function to add correct  # indents
+                    out.write(line) # write line to out file
+                    line = opened.readline() # Reading next line for next check
+                else:
+                    line = line + ':' # EX: "while <condition> " we add in the missing ":"
+                    out.write(line) # write line to out file
+                    line = opened.readline() # Reading next line for next check
+
             elif line.__contains__('for '):
-                line = 'something' # CHANGE THIS FOR FOR-LOOP SUB-LEVEL CHECKING
+                if line.__contains__(':') and line.__contains__(' in '):
+                    line, sub = indentationCheck(line, sub) # call function to add correct  # indents
+                    out.write(line) # write line to out file
+                    line = opened.readline() # Reading next line for next check
+                elif line.find(':') == -1 and line.find(' in ') != -1:
+                    line = line + ":"
+                    out.write(line) # write line to out file
+                    line = opened.readline() # Reading next line for next check
+                elif line.find(':') != -1 and line.find(' in ') == -1:
+                    first_space = line.find(' ')
+                    second_space = line.find(' ', first_space) # index of second space
+                    line = line[:second_space] + 'in ' + line[second_space:] # add in the in key word and a space
+                    out.write(line) # write line to out file
+                    line = opened.readline() # Reading next line for next check
+                else:
+                    first_space = line.find(' ')
+                    second_space = line.find(' ', first_space) # index of second space
+                    line = line[:second_space] + 'in ' + line[second_space:] # add in the in key word and a space
+                    line = line + ":" #add to the end of the line
+                    out.write(line) # write line to out file
+                    line = opened.readline() # Reading next line for next check
             else:
                 printKeywords += line.count('print(')
                 sub -= 1
