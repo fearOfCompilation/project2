@@ -1,3 +1,5 @@
 # additional/misc files sometimes cached by Python
 __pycache__/
 *.py[cod]
+testExamples.py
+Updated.txt
