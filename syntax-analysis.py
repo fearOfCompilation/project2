@@ -162,6 +162,10 @@ def fileAnalysis(file):
                 printKeywords += line.count('print(')
                 out.write(line)
                 line = opened.readline()
+    endlines = ['\n', '\n---End of fixed code---\n',]
+    out.writelines(endlines)    
+    
+    out.write('\n')
     out.write('\n\n')
     out.write('Count for print keywords: ' + str(printKeywords))
     opened.close()
