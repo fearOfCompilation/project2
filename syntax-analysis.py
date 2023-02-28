@@ -14,6 +14,7 @@ def fileAnalysis(file):
         else: 
             while indents < sub: 
                 line = '\t' + line
+                indents += 1
             return line, sub - 1
         
     opened = open(file, 'r', encoding = 'utf8') # opens the file for reading and writing
@@ -24,6 +25,7 @@ def fileAnalysis(file):
         out.write(line)
 
     opened.seek(0)
+    line = opened.readline()
     sub = 0 # checks the sublevel of a function (whether def or if has been called yet and indentation is needed)
     printKeywords = 0 # holds the number of times the print function is called
     while line is not None:
