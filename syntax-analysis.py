@@ -2,12 +2,17 @@ def fileAnalysis(file):
     """Function that begins the file Analysis"""
     def indentationCheck(line, sub):
         """Function to check the amount of indentation a line has, assuming the rest of the function has been corrected"""
+        headers = ['def ', 'if ', 'for ', 'while ']
         line = line.rstrip('\t') # removes tabs from end of line (just to protect against edge case "\t *line* \t")
         indents = line.count('\t')
         if indents == sub: # Passed line has enough indents and is good for placement
             return line, sub - 1
+        elif headers.__contains__(line): # Don't want to subtract a sub-level from a header, since it may (most likely will) have another line to run afterwards
+            while indents < sub: # Add as many indents as needed to match the current sub-level
+                line = '\t' + line
+            return line, sub
         else: 
-            while indents < sub: # As as many indents as needed to match the currnet sub-level
+            while indents < sub: 
                 line = '\t' + line
             return line, sub - 1
         
@@ -21,24 +26,19 @@ def fileAnalysis(file):
     printKeywords = 0 # holds the number of times the print function is called
     while line is not None:
         if sub == 0:
-            if line.__contains__('def '): # WE WILL NEED TO ADD FUNCATIONALITY TO CHECK IF THERE IS NO SPACE THIS IS A TEMP FIX
-                    if line.__contains__('(') and line.__contains__(')') and line.__contains__(':'):
-                        sub +=1
-                        out.write(line)
-                        line = opened.readline()
+            if line.__contains__('def'):
+                    if not line.__contains__('def '):
+                        line = line[:line.find('def') + 3] + ' ' + line[line.find('def') + 4:]
                     if line.find('(') == -1: # this denotes the the first paraenthesis for the def function is missing
                         # since strings are immutatable have to make a new string with the missing piece and then overwrite that line of the file
                         line = line[:line.find('def') + 3] + '(' + line[line.find('def') + 3:]
-                        out.write(line)
-                        line = opened.readline()
                     if line.find(')') == -1:
                         line = line[:line.find(':')] + ')' + line[line.find(':'):]
-                        out.write(line)
-                        line = opened.readline()
                     if line.find(':') == -1:
                         line = line + ':'
-                        out.write(line)
-                        line = opened.readline()
+                    sub += 1
+                    out.write(line)
+                    line = opened.readline()
             elif line.__contains__('if '):
                 if line.__contains__(':'):
                     sub +=1
@@ -49,6 +49,7 @@ def fileAnalysis(file):
                     out.write(line)
                     line = opened.readline()
             else:
+                out.write(line)
                 printKeywords += line.count('print(') # Checking for the first paraenthesis since only function calls are wanted, not the actual word
                 line = opened.readline()
         else:
@@ -59,15 +60,29 @@ def fileAnalysis(file):
                     line = opened.readline()
                 if line.find('(') == -1: 
                     line = line[:line.find('def') + 3] + '(' + line[line.find('def') + 3:]
-                    # Input measures for the indentation check
+                    line, sub = indentationCheck(line, sub)
+                    out.write(line)
+                    line = opened.readline()
                 if line.find(')') == -1:
                     line = line[:line.find(':')] + ')' + line[line.find(':'):]
-                    # Input measures for indentation check
+                    line, sub = indentationCheck(line, sub)
+                    out.write(line)
+                    line = opened.readline()
                 if line.find(':') == -1:
                     line = line + ':'
-                    # Input measures for indentation check
+                    line, sub = indentationCheck(line, sub)
+                    out.write(line)
+                    line = opened.readline()
             elif line.__contains__('if '):
-                line = 'something' # CHANGE THIS FOR IF SUB-LEVEL CHECKING
+                if line.__contains__(':'):
+                    line, sub = indentationCheck(line, sub)
+                    out.write(line)
+                    line = opened.readline()
+                else:
+                    line = line + ':'
+                    line, sub = indentationCheck(line, sub)
+                    out.write(line)
+                    line = opened.readline()
             elif line.__contains__('while '):
                 if line.__contains__(':'):
                     line, sub = indentationCheck(line, sub) # call function to add correct  # indents
@@ -77,7 +92,6 @@ def fileAnalysis(file):
                     line = line + ':' # EX: "while <condition> " we add in the missing ":"
                     out.write(line) # write line to out file
                     line = opened.readline() # Reading next line for next check
-
             elif line.__contains__('for '):
                 if line.__contains__(':') and line.__contains__(' in '):
                     line, sub = indentationCheck(line, sub) # call function to add correct  # indents
@@ -101,8 +115,9 @@ def fileAnalysis(file):
                     out.write(line) # write line to out file
                     line = opened.readline() # Reading next line for next check
             else:
+                line, sub = indentationCheck(line, sub)
                 printKeywords += line.count('print(')
-                sub -= 1
+                out.write(line)
                 line = opened.readline()
 
 
