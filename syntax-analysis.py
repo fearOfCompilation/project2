@@ -90,7 +90,7 @@ def fileAnalysis(file):
         else:
             if line.__contains__('def '):
                 if line.find('(') == -1: 
-                    line = line[:line.find('def') + 3] + '(' + line[line.find('def') + 3:])
+                    line = line[:line.find('def') + 3] + '(' + line[line.find('def') + 3:]
                 if line.find(')') == -1:
                     line = line[:line.find(':')] + ')' + line[line.find(':'):]
                 if line.find(':') == -1:
