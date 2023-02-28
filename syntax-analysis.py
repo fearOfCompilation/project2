@@ -16,7 +16,7 @@ def fileAnalysis(file):
                 line = '\t' + line
             return line, sub - 1
         
-    opened = open('testExamples.py', 'r', encoding = 'utf8') # opens the file for reading and writing
+    opened = open(file, 'r', encoding = 'utf8') # opens the file for reading and writing
     out = open('Updated.txt', 'w') # open a new file for appending the gather data
     lines = opened.readlines()
 
