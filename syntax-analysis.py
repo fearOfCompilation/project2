@@ -48,31 +48,56 @@ def fileAnalysis(file):
                     line = line + ':'
                     out.write(line)
                     line = opened.readline()
+            elif line.__contains__('while '):
+                if line.__contains__(':'):
+                    sub += 1
+                    out.write(line) # write line to out file
+                    line = opened.readline() # Reading next line for next check
+                else:
+                    line = line + ':' # EX: "while <condition> " we add in the missing ":"
+                    sub += 1
+                    out.write(line) # write line to out file
+                    line = opened.readline() # Reading next line for next check
+            elif line.__contains__('for '):
+                if line.__contains__(':') and line.__contains__(' in '):
+                    sub += 1
+                    out.write(line) # write line to out file
+                    line = opened.readline() # Reading next line for next check
+                elif line.find(':') == -1 and line.find(' in ') != -1:
+                    line = line + ":"
+                    sub += 1
+                    out.write(line) # write line to out file
+                    line = opened.readline() # Reading next line for next check
+                elif line.find(':') != -1 and line.find(' in ') == -1:
+                    first_space = line.find(' ')
+                    second_space = line.find(' ', first_space) # index of second space
+                    line = line[:second_space] + 'in ' + line[second_space:] # add in the in key word and a space
+                    sub += 1
+                    out.write(line) # write line to out file
+                    line = opened.readline() # Reading next line for next check
+                else:
+                    first_space = line.find(' ')
+                    second_space = line.find(' ', first_space) # index of second space
+                    line = line[:second_space] + 'in ' + line[second_space:] # add in the in key word and a space
+                    line = line + ":" #add to the end of the line
+                    sub += 1
+                    out.write(line) # write line to out file
+                    line = opened.readline() # Reading next line for next check
             else:
                 out.write(line)
                 printKeywords += line.count('print(') # Checking for the first paraenthesis since only function calls are wanted, not the actual word
                 line = opened.readline()
         else:
             if line.__contains__('def '):
-                if line.__contains__('(') and line.__contains__(')') and line.__contains__(':'):
-                    line, sub = indentationCheck(line, sub) # Example using new indentation check method and skeleton for rest
-                    out.write(line)
-                    line = opened.readline()
                 if line.find('(') == -1: 
-                    line = line[:line.find('def') + 3] + '(' + line[line.find('def') + 3:]
-                    line, sub = indentationCheck(line, sub)
-                    out.write(line)
-                    line = opened.readline()
+                    line = line[:line.find('def') + 3] + '(' + line[line.find('def') + 3:])
                 if line.find(')') == -1:
                     line = line[:line.find(':')] + ')' + line[line.find(':'):]
-                    line, sub = indentationCheck(line, sub)
-                    out.write(line)
-                    line = opened.readline()
                 if line.find(':') == -1:
                     line = line + ':'
-                    line, sub = indentationCheck(line, sub)
-                    out.write(line)
-                    line = opened.readline()
+                line, sub = indentationCheck(line, sub)
+                out.write(line)
+                line = opened.readline()
             elif line.__contains__('if '):
                 if line.__contains__(':'):
                     line, sub = indentationCheck(line, sub)
@@ -86,34 +111,38 @@ def fileAnalysis(file):
             elif line.__contains__('while '):
                 if line.__contains__(':'):
                     line, sub = indentationCheck(line, sub) # call function to add correct  # indents
-                    out.write(line) # write line to out file
-                    line = opened.readline() # Reading next line for next check
+                    out.write(line)
+                    line = opened.readline()
                 else:
-                    line = line + ':' # EX: "while <condition> " we add in the missing ":"
+                    line = line + ':'
+                    line, sub = indentationCheck(line, sub)
                     out.write(line) # write line to out file
                     line = opened.readline() # Reading next line for next check
             elif line.__contains__('for '):
                 if line.__contains__(':') and line.__contains__(' in '):
                     line, sub = indentationCheck(line, sub) # call function to add correct  # indents
-                    out.write(line) # write line to out file
-                    line = opened.readline() # Reading next line for next check
+                    out.write(line)
+                    line = opened.readline()
                 elif line.find(':') == -1 and line.find(' in ') != -1:
                     line = line + ":"
-                    out.write(line) # write line to out file
-                    line = opened.readline() # Reading next line for next check
+                    line, sub = indentationCheck(line, sub)
+                    out.write(line)
+                    line = opened.readline()
                 elif line.find(':') != -1 and line.find(' in ') == -1:
                     first_space = line.find(' ')
-                    second_space = line.find(' ', first_space) # index of second space
-                    line = line[:second_space] + 'in ' + line[second_space:] # add in the in key word and a space
-                    out.write(line) # write line to out file
-                    line = opened.readline() # Reading next line for next check
+                    second_space = line.find(' ', first_space)
+                    line = line[:second_space] + 'in ' + line[second_space:]
+                    line, sub = indentationCheck(line, sub)
+                    out.write(line)
+                    line = opened.readline()
                 else:
                     first_space = line.find(' ')
-                    second_space = line.find(' ', first_space) # index of second space
-                    line = line[:second_space] + 'in ' + line[second_space:] # add in the in key word and a space
-                    line = line + ":" #add to the end of the line
-                    out.write(line) # write line to out file
-                    line = opened.readline() # Reading next line for next check
+                    second_space = line.find(' ', first_space)
+                    line = line[:second_space] + 'in ' + line[second_space:]
+                    line = line + ":"
+                    line, sub = indentationCheck(line, sub)
+                    out.write(line)
+                    line = opened.readline()
             else:
                 line, sub = indentationCheck(line, sub)
                 printKeywords += line.count('print(')
@@ -121,13 +150,11 @@ def fileAnalysis(file):
                 line = opened.readline()
 
 
-
-
-
 def main():
     """Main function to be run when in standalone"""
     fileName = input('Please input the name of the file')
     fileAnalysis(fileName)
+
 
 if __name__ == '__main__':
     main()
