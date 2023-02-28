@@ -4,16 +4,17 @@ def fileAnalysis(file):
         """Function to check the amount of indentation a line has, assuming the rest of the function has been corrected"""
         headers = ['def ', 'if ', 'for ', 'while ']
         line = line.rstrip('\t') # removes tabs from end of line (just to protect against edge case "\t *line* \t")
-        indents = line.count('\t')
+        indents = line.count('    ')
         if indents == sub: # Passed line has enough indents and is good for placement
             return line, sub - 1
         elif headers.__contains__(line): # Don't want to subtract a sub-level from a header, since it may (most likely will) have another line to run afterwards
             while indents < sub: # Add as many indents as needed to match the current sub-level
-                line = '\t' + line
+                line = '    ' + line
+                indents += 1
             return line, sub
         else: 
             while indents < sub: 
-                line = '\t' + line
+                line = '    ' + line
                 indents += 1
             return line, sub - 1
         
