@@ -152,7 +152,7 @@ def fileAnalysis(file):
 
 def main():
     """Main function to be run when in standalone"""
-    fileName = input('Please input the name of the file')
+    fileName = input('Please input the name of the file\n')
     fileAnalysis(fileName)
 
 
