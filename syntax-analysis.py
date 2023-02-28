@@ -3,20 +3,20 @@ def fileAnalysis(file):
     def indentationCheck(line, sub):
         """Function to check the amount of indentation a line has, assuming the rest of the function has been corrected"""
         headers = ['def ', 'if ', 'for ', 'while ']
-        line = line.rstrip('\t') # removes tabs from end of line (just to protect against edge case "\t *line* \t")
+        line = line.rstrip('    ') # removes tabs from end of line (just to protect against edge case "\t *line* \t")
         indents = line.count('    ')
-        if indents == sub: # Passed line has enough indents and is good for placement
-            return line, sub - 1
+        if indents == sub:
+            return line, sub + 1
         elif headers.__contains__(line): # Don't want to subtract a sub-level from a header, since it may (most likely will) have another line to run afterwards
             while indents < sub: # Add as many indents as needed to match the current sub-level
                 line = '    ' + line
                 indents += 1
-            return line, sub
+            return line, sub + 1
         else: 
             while indents < sub: 
                 line = '    ' + line
                 indents += 1
-            return line, sub - 1
+            return line, sub + 1
         
     opened = open(file, 'r', encoding = 'utf8') # opens the file for reading and writing
     out = open('Updated.txt', 'w') # open a new file for appending the gather data
@@ -29,18 +29,18 @@ def fileAnalysis(file):
     line = opened.readline()
     sub = 0 # checks the sublevel of a function (whether def or if has been called yet and indentation is needed)
     printKeywords = 0 # holds the number of times the print function is called
-    while line is not None:
+    while not line == '':
         if sub == 0:
             if line.__contains__('def'):
                     if not line.__contains__('def '):
-                        line = line[:line.find('def') + 3] + ' ' + line[line.find('def') + 4:]
+                        line = line[:line.find('def') + 3] + ' ' + line[line.find('def') + 3:]
                     if line.find('(') == -1: # this denotes the the first paraenthesis for the def function is missing
                         # since strings are immutatable have to make a new string with the missing piece and then overwrite that line of the file
                         line = line[:line.find('def') + 3] + '(' + line[line.find('def') + 3:]
                     if line.find(')') == -1:
                         line = line[:line.find(':')] + ')' + line[line.find(':'):]
                     if line.find(':') == -1:
-                        line = line + ':'
+                        line = line[:len(line) - 1] + ':\n'
                     sub += 1
                     out.write(line)
                     line = opened.readline()
@@ -88,6 +88,9 @@ def fileAnalysis(file):
                     sub += 1
                     out.write(line) # write line to out file
                     line = opened.readline() # Reading next line for next check
+            elif line == '\n':
+                sub = 0
+                line = opened.readline()
             else:
                 out.write(line)
                 printKeywords += line.count('print(') # Checking for the first paraenthesis since only function calls are wanted, not the actual word
@@ -148,6 +151,9 @@ def fileAnalysis(file):
                     line, sub = indentationCheck(line, sub)
                     out.write(line)
                     line = opened.readline()
+            elif line == '\n':
+                sub = 0
+                line = opened.readline()
             else:
                 line, sub = indentationCheck(line, sub)
                 printKeywords += line.count('print(')
