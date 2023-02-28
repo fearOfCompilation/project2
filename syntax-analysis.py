@@ -2,16 +2,15 @@ def fileAnalysis(file):
     """Function that begins the file Analysis"""
     def indentationCheck(line, sub):
         """Function to check the amount of indentation a line has, assuming the rest of the function has been corrected"""
-        headers = ['def ', 'if ', 'for ', 'while ']
         line = line.rstrip('    ') # removes tabs from end of line (just to protect against edge case "\t *line* \t")
         indents = line.count('    ')
-        if indents == sub:
+        if indents == sub and not line.__contains__('print('):
             return line, sub + 1
-        elif headers.__contains__(line): # Don't want to subtract a sub-level from a header, since it may (most likely will) have another line to run afterwards
+        elif line.__contains__('print('): # Don't want to increase a sub-level from a print function 
             while indents < sub: # Add as many indents as needed to match the current sub-level
                 line = '    ' + line
                 indents += 1
-            return line, sub + 1
+            return line, sub
         else: 
             while indents < sub: 
                 line = '    ' + line
@@ -25,6 +24,8 @@ def fileAnalysis(file):
     for line in lines: # function for re-writing the original file to the new file
         out.write(line)
 
+    endlines = ['\n', '\n---End of original code, fixed follows---\n', '\n']
+    out.writelines(endlines)
     opened.seek(0)
     line = opened.readline()
     sub = 0 # checks the sublevel of a function (whether def or if has been called yet and indentation is needed)
@@ -63,7 +64,7 @@ def fileAnalysis(file):
                     sub += 1
                     out.write(line) # write line to out file
                     line = opened.readline() # Reading next line for next check
-            elif line.__contains__('for '):
+            elif line.__contains__('for ') and not line.__contains__('#'):
                 if line.__contains__(':') and line.__contains__(' in '):
                     sub += 1
                     out.write(line) # write line to out file
@@ -88,8 +89,9 @@ def fileAnalysis(file):
                     sub += 1
                     out.write(line) # write line to out file
                     line = opened.readline() # Reading next line for next check
-            elif line == '\n':
+            elif line == '\n' or line.__contains__('#the'):
                 sub = 0
+                out.write(line)
                 line = opened.readline()
             else:
                 out.write(line)
@@ -126,7 +128,7 @@ def fileAnalysis(file):
                     line, sub = indentationCheck(line, sub)
                     out.write(line) # write line to out file
                     line = opened.readline() # Reading next line for next check
-            elif line.__contains__('for '):
+            elif line.__contains__('for ') and not line.__contains__('#'):
                 if line.__contains__(':') and line.__contains__(' in '):
                     line, sub = indentationCheck(line, sub) # call function to add correct  # indents
                     out.write(line)
@@ -153,12 +155,14 @@ def fileAnalysis(file):
                     line = opened.readline()
             elif line == '\n':
                 sub = 0
+                out.write(line)
                 line = opened.readline()
             else:
                 line, sub = indentationCheck(line, sub)
                 printKeywords += line.count('print(')
                 out.write(line)
                 line = opened.readline()
+    out.write('\n')
     out.write('Count for print keywords: ' + str(printKeywords))
     opened.close()
     out.close()
