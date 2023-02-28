@@ -16,12 +16,14 @@ def fileAnalysis(file):
                 line = '\t' + line
             return line, sub - 1
         
-    opened = open(file, 'r') # opens the file for reading and writing
-    out = open('Updated.txt', 'a') # open a new file for appending the gather data
-    
-    for line in opened.readlines(): # function for re-writing the original file to the new file
+    opened = open('testExamples.py', 'r', encoding = 'utf8') # opens the file for reading and writing
+    out = open('Updated.txt', 'w') # open a new file for appending the gather data
+    lines = opened.readlines()
+
+    for line in lines: # function for re-writing the original file to the new file
         out.write(line)
 
+    opened.seek(0)
     sub = 0 # checks the sublevel of a function (whether def or if has been called yet and indentation is needed)
     printKeywords = 0 # holds the number of times the print function is called
     while line is not None:
@@ -148,12 +150,16 @@ def fileAnalysis(file):
                 printKeywords += line.count('print(')
                 out.write(line)
                 line = opened.readline()
+    out.write('Count for print keywords: ' + str(printKeywords))
+    opened.close()
+    out.close()
 
 
 def main():
     """Main function to be run when in standalone"""
-    fileName = input('Please input the name of the file')
+    fileName = input('Please input the name of the file ')
     fileAnalysis(fileName)
+    print('Analysis has finished!')
 
 
 if __name__ == '__main__':
